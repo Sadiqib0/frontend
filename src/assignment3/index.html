@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calc</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="calculator" id="calculator">
+    <div class="display">
+        <div class="display-previous" id="displayPrevious"></div>
+        <div class="display-current" id="displayCurrent">0</div>
+    </div>
+
+    <div class="keypad">
+        <button class="button function" data-action="clear">C</button>
+        <button class="button function" data-action="delete">DEL</button>
+        <button class="button function" data-action="percent">%</button>
+        <button class="button operator" data-action="operator" data-value="/">÷</button>
+
+        <button class="button number" data-action="number" data-value="7">7</button>
+        <button class="button number" data-action="number" data-value="8">8</button>
+        <button class="button number" data-action="number" data-value="9">9</button>
+        <button class="button operator" data-action="operator" data-value="*">×</button>
+
+        <button class="button number" data-action="number" data-value="4">4</button>
+        <button class="button number" data-action="number" data-value="5">5</button>
+        <button class="button number" data-action="number" data-value="6">6</button>
+        <button class="button operator" data-action="operator" data-value="-">−</button>
+
+        <button class="button number" data-action="number" data-value="1">1</button>
+        <button class="button number" data-action="number" data-value="2">2</button>
+        <button class="button number" data-action="number" data-value="3">3</button>
+        <button class="button operator" data-action="operator" data-value="+">+</button>
+
+        <button class="button number zero" data-action="number" data-value="0">0</button>
+        <button class="button number" data-action="decimal">.</button>
+        <button class="button equals" data-action="equals">=</button>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
