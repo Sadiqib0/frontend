@@ -100,4 +100,40 @@ html, body {
     transition: transform 0.08s ease, background 0.18s ease, box-shadow 0.18s ease;
     box-shadow: 0 2px 0 rgba(0, 0, 0, 0.25);
 }
+.key:hover { background: #262b36; }
+.key:active { transform: scale(0.95); }
 
+.key--util {
+    color: var(--muted);
+    background: #1d2129;
+}
+
+.key--op {
+    color: var(--accent);
+    font-weight: 600;
+    font-size: 1.3rem;
+}
+
+.key--op.is-active {
+    background: var(--accent);
+    color: #1a1208;
+}
+
+.key--equals {
+    background: var(--accent);
+    color: #1a1208;
+    font-weight: 700;
+}
+.key--equals:hover { background: var(--accent-press); }
+
+.key--zero { grid-column: span 1; }
+
+/* error shake */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+}
+.calculator.shake { animation: shake 0.35s ease; }
