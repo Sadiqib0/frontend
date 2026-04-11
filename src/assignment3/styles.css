@@ -128,7 +128,6 @@ html, body {
 
 .key--zero { grid-column: span 1; }
 
-/* error shake */
 @keyframes shake {
     0%, 100% { transform: translateX(0); }
     20% { transform: translateX(-6px); }
