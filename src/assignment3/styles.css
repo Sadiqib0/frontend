@@ -1,0 +1,103 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+    --bg: #0f1115;
+    --panel: #181b22;
+    --panel-2: #20242d;
+    --text: #f4f5f7;
+    --muted: #7a818f;
+    --accent: #ff9f43;
+    --accent-press: #ffb066;
+    --shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+    --radius: 18px;
+}
+
+* {
+    box-sizing: border-box;
+    font-style: normal !important;
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: radial-gradient(circle at 30% 20%, #0a0c10 0%, #0a0c10 70%);
+    color: var(--text);
+    display: grid;
+    place-items: center;
+    -webkit-font-smoothing: antialiased;
+}
+
+.calculator {
+    width: min(340px, 92vw);
+    background: var(--panel);
+    border-radius: 28px;
+    padding: 22px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.05),
+            0 1px 0 rgba(255, 255, 255, 0.02),
+            0 30px 80px rgba(0, 0, 0, 0.55),
+            0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.display {
+    background: #14171d;
+    padding: 22px 18px 24px;
+    text-align: right;
+    min-height: 110px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    overflow: hidden;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.35);
+    margin-bottom: 16px;
+}
+
+.history {
+    font-size: 0.95rem;
+    color: var(--muted);
+    min-height: 1.2em;
+    word-break: break-all;
+}
+
+.current {
+    font-size: 2.6rem;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    margin-top: 6px;
+    word-break: break-all;
+    font-variant-numeric: tabular-nums lining-nums;
+    font-feature-settings: "tnum", "lnum";
+    transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.current.flash {
+    opacity: 0;
+    transform: translateY(4px);
+}
+
+.keys {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.key {
+    appearance: none;
+    border: none;
+    outline: none;
+    font: inherit;
+    font-size: 1.15rem;
+    color: var(--text);
+    background: var(--panel-2);
+    border-radius: var(--radius);
+    height: 60px;
+    cursor: pointer;
+    transition: transform 0.08s ease, background 0.18s ease, box-shadow 0.18s ease;
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.25);
+}
+
