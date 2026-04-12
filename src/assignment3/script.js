@@ -100,5 +100,99 @@ function appendNumber(input) {
     updateDisplay();
 }
 
+function chooseOperator(op) {
+    if (errored) return;
+    if (awaitingOperand) {
+        pendingOperator = op;
+        expression = expression.slice(0, -1) + getSymbol(op);
+        updateDisplay();
+        return;
+    }
+
+    const typedOperand = formatNumber(currentOperand);
+
+    if (previousOperand !== null && !justEvaluated) {
+        const result = compute(previousOperand, parseFloat(currentOperand), pendingOperator);
+        if (result === null) return;
+        previousOperand = result;
+        currentOperand = result.toString();
+    } else {
+        previousOperand = parseFloat(currentOperand);
+    }
+
+    if (justEvaluated) expression = '';
+
+    expression = expression + typedOperand + getSymbol(op);
+    pendingOperator = op;
+    justEvaluated = false;
+    awaitingOperand = true;
+    flashDisplay();
+    updateDisplay();
+}
+
+function compute(a, b, op) {
+    let result;
+
+    if (op === '+') {
+        result = a + b;
+    } else if (op === '-') {
+        result = a - b;
+    } else if (op === '*') {
+        result = a * b;
+    } else if (op === '/') {
+        if (b === 0) {
+            errored = true;
+            currentOperand = "Can't divide by zero";
+            previousOperand = null;
+            pendingOperator = null;
+            shake();
+            updateDisplay();
+            return null;
+        }
+        result = a / b;
+    } else {
+        return b;
+    }
+    return parseFloat(result.toFixed(10));
+}
+
+function computeResult() {
+    if (errored) return;
+
+    let a, b, op;
+
+    if (pendingOperator !== null && previousOperand !== null) {
+        a = previousOperand;
+        b = parseFloat(currentOperand);
+        op = pendingOperator;
+        lastOperator = op;
+        lastOperand = b;
+    } else if (justEvaluated && lastOperator !== null) {
+        a = parseFloat(currentOperand);
+        b = lastOperand;
+        op = lastOperator;
+    } else {
+        return;
+    }
+
+    const result = compute(a, b, op);
+    if (result === null) return;
+
+    if (expression) {
+        lastExpression = expression + formatNumber(currentOperand);
+    } else {
+        lastExpression = formatNumber(a) + getSymbol(op) + formatNumber(b);
+    }
+
+    expression = '';
+    currentOperand = result.toString();
+    previousOperand = null;
+    pendingOperator = null;
+    justEvaluated = true;
+    awaitingOperand = false;
+    flashDisplay();
+    updateDisplay();
+}
+
 
 
