@@ -15,12 +15,12 @@ let lastExpression = null;
 let errored = false;
 
 
-function getSymbol(op) {
-    if (op === '+') return '+';
-    if (op === '-') return '−';
-    if (op === '*') return '×';
-    if (op === '/') return '÷';
-    return op;
+function getSymbol(operator) {
+    if (operator === '+') return '+';
+    if (operator === '-') return '−';
+    if (operator === '*') return '×';
+    if (operator === '/') return '÷';
+    return operator;
 }
 
 
@@ -57,8 +57,8 @@ function updateDisplay() {
         historyElement.textContent = '';
     }
 
-    const opButtons = document.querySelectorAll('.key--op');
-    opButtons.forEach(function(btn) {
+    const operatorButtons = document.querySelectorAll('.key--op');
+    operatorButtons.forEach(function(btn) {
         if (awaitingOperand && btn.dataset.operator === pendingOperator) {
             btn.classList.add('is-active');
         } else {
@@ -193,6 +193,93 @@ function computeResult() {
     flashDisplay();
     updateDisplay();
 }
+
+function clear() {
+    currentOperand = '0';
+    previousOperand = null;
+    pendingOperator = null;
+    justEvaluated = false;
+    awaitingOperand = false;
+    expression = '';
+    lastExpression = null;
+    lastOperator = null;
+    lastOperand = null;
+    errored = false;
+    flashDisplay();
+    updateDisplay();
+}
+
+function deleteLast() {
+    if (errored) return clear();
+    if (justEvaluated) return;
+
+    if (currentOperand.length <= 1) {
+        currentOperand = '0';
+    } else if (currentOperand.length === 2 && currentOperand.startsWith('-')) {
+        currentOperand = '0';
+    } else {
+        currentOperand = currentOperand.slice(0, -1);
+    }
+
+    updateDisplay();
+}
+
+function percent() {
+    if (errored) return;
+    currentOperand = (parseFloat(currentOperand) / 100).toString();
+    updateDisplay();
+}
+
+function toggleSign() {
+    if (errored) return;
+    const value = parseFloat(currentOperand);
+    if (value === 0) return;
+    currentOperand = (value * -1).toString();
+    updateDisplay();
+}
+
+keysElement.addEventListener('click', function(e) {
+    const button = e.target.closest('button');
+    if (!button) return;
+
+    if (button.dataset.number !== undefined) {
+        appendNumber(button.dataset.number);
+    } else if (button.dataset.operator) {
+        chooseOperator(button.dataset.operator);
+    } else if (button.dataset.action === 'equals') {
+        computeResult();
+    } else if (button.dataset.action === 'clear') {
+        clear();
+    } else if (button.dataset.action === 'delete') {
+        deleteLast();
+    } else if (button.dataset.action === 'percent') {
+        percent();
+    } else if (button.dataset.action === 'toggle-sign') {
+        toggleSign();
+    }
+});
+
+document.addEventListener('keydown', function(e) {
+    const key = e.key;
+
+    if ((key >= '0' && key <= '9') || key === '.') {
+        appendNumber(key);
+    } else if (key === '+' || key === '-' || key === '*' || key === '/') {
+        chooseOperator(key);
+    } else if (key === 'Enter' || key === '=') {
+        e.preventDefault();
+        computeResult();
+    } else if (key === 'Backspace') {
+        deleteLast();
+    } else if (key === 'Escape') {
+        clear();
+    } else if (key === '%') {
+        percent();
+    }
+});
+
+updateDisplay();
+
 
 
 
