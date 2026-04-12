@@ -239,22 +239,22 @@ function toggleSign() {
 }
 
 keysElement.addEventListener('click', function(e) {
-    const button = e.target.closest('button');
-    if (!button) return;
+    const btn = e.target.closest('button');
+    if (!btn) return;
 
-    if (button.dataset.number !== undefined) {
-        appendNumber(button.dataset.number);
-    } else if (button.dataset.operator) {
-        chooseOperator(button.dataset.operator);
-    } else if (button.dataset.action === 'equals') {
+    if (btn.dataset.number !== undefined) {
+        appendNumber(btn.dataset.number);
+    } else if (btn.dataset.operator) {
+        chooseOperator(btn.dataset.operator);
+    } else if (btn.dataset.action === 'equals') {
         computeResult();
-    } else if (button.dataset.action === 'clear') {
+    } else if (btn.dataset.action === 'clear') {
         clear();
-    } else if (button.dataset.action === 'delete') {
+    } else if (btn.dataset.action === 'delete') {
         deleteLast();
-    } else if (button.dataset.action === 'percent') {
+    } else if (btn.dataset.action === 'percent') {
         percent();
-    } else if (button.dataset.action === 'toggle-sign') {
+    } else if (btn.dataset.action === 'toggle-sign') {
         toggleSign();
     }
 });
@@ -280,6 +280,20 @@ document.addEventListener('keydown', function(e) {
 
 updateDisplay();
 
-
-
-
+if (typeof module !== 'undefined') {
+    module.exports = function() {
+        return {
+            getSymbol,
+            formatNumber,
+            compute,
+            appendNumber,
+            chooseOperator,
+            computeResult,
+            clear,
+            deleteLast,
+            percent,
+            toggleSign,
+            getState: () => ({ currentOperand, previousOperand, pendingOperator, justEvaluated, awaitingOperand, errored }),
+        };
+    };
+}
