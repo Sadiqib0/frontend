@@ -41,6 +41,16 @@ html, body {
             0 10px 30px rgba(0, 0, 0, 0.4);
 }
 
+.calculator-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--muted);
+    text-align: center;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin: 0 0 16px 0;
+}
+
 .display {
     background: #14171d;
     padding: 22px 18px 24px;

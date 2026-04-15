@@ -142,10 +142,9 @@ function compute(a, b, op) {
     } else if (op === '/') {
         if (b === 0) {
             errored = true;
-            currentOperand = "Can't divide by zero";
+            currentOperand = 'err';
             previousOperand = null;
             pendingOperator = null;
-            shake();
             updateDisplay();
             return null;
         }
