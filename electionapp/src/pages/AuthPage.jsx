@@ -4,6 +4,7 @@ import { registerVoter, loginVoter } from '../api/auth';
 import { registerAdmin, loginAdmin } from '../api/admin';
 import { useAuth } from '../context/AuthContext';
 import { useAdmin } from '../context/AdminContext';
+import { Logo } from '../components/Logo';
 
 function Input({ label, type = 'text', value, onChange, placeholder, hint, required, rightElement }) {
   return (
@@ -256,9 +257,8 @@ export default function AuthPage() {
 
   return (
     <div className="min-h-screen bg-[#0d0d0d] flex flex-col items-center justify-center p-4">
-      <div className="flex items-center gap-2 mb-10">
-        <span className="text-blue-500 text-2xl">◆</span>
-        <span className="text-white text-3xl font-bold">Election App</span>
+      <div className="mb-10">
+        <Logo size="lg" />
       </div>
 
       <div className="w-full max-w-md bg-[#161616] border border-neutral-800 rounded-2xl overflow-hidden">

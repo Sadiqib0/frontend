@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { registerAdmin, loginAdmin } from '../api/admin';
 import { useAdmin } from '../context/AdminContext';
+import { Logo } from '../components/Logo';
 
 function Input({ label, type = 'text', value, onChange, required, hint }) {
   return (
@@ -119,9 +120,8 @@ export default function AdminPage() {
 
   return (
     <div className="min-h-screen bg-[#0d0d0d] flex flex-col items-center justify-center p-4">
-      <div className="flex items-center gap-2 mb-3">
-        <span className="text-blue-500 text-2xl">◆</span>
-        <span className="text-white text-3xl font-bold">Election App</span>
+      <div className="mb-2">
+        <Logo size="lg" />
       </div>
       <p className="text-neutral-500 text-sm mb-10">Admin Portal</p>
 
