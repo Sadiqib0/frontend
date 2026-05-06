@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { getElectionStatus, getElectionPositions, getElectionStats, getResults, verifyVote, positionLabel } from '../api/elections';
+import { getElection, getElectionStats, getResults, verifyVote, positionLabel } from '../api/elections';
 import { useAuth } from '../context/AuthContext';
 import { Header } from '../components/Header';
 import { StatusBadge } from '../components/StatusBadge';
@@ -107,6 +107,7 @@ function StatsBar({ stats }) {
 
 export default function ElectionsPage() {
   const { user } = useAuth();
+  const [electionName, setElectionName] = useState('');
   const [status, setStatus] = useState(null);
   const [stats, setStats] = useState(null);
   const [results, setResults] = useState({});
@@ -116,19 +117,19 @@ export default function ElectionsPage() {
   useEffect(() => {
     const load = async () => {
       try {
-        const [s, st, pos] = await Promise.all([
-          getElectionStatus(),
+        const [election, st] = await Promise.all([
+          getElection().catch(() => null),
           getElectionStats().catch(() => null),
-          getElectionPositions().catch(() => []),
         ]);
-        setStatus(s);
+        setElectionName(election?.name ?? '');
+        setStatus(election?.status ?? null);
+        setPositions(election?.positions ?? []);
         setStats(st);
-        setPositions(pos ?? []);
 
-        if (s === 'ENDED' && pos?.length) {
-          const posResults = await Promise.all(pos.map(p => getResults(p).catch(() => null)));
+        if (election?.status === 'ENDED' && election?.positions?.length) {
+          const posResults = await Promise.all(election.positions.map(p => getResults(p).catch(() => null)));
           const map = {};
-          pos.forEach((p, i) => { map[p] = posResults[i]; });
+          election.positions.forEach((p, i) => { map[p] = posResults[i]; });
           setResults(map);
         }
       } catch {
@@ -175,7 +176,10 @@ export default function ElectionsPage() {
       <Header />
       <main className="max-w-3xl mx-auto px-6 py-10">
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-bold text-white">Elections</h1>
+          <div>
+            <h1 className="text-3xl font-bold text-white">Elections</h1>
+            {electionName && <p className="text-neutral-400 text-sm mt-1">{electionName}</p>}
+          </div>
         </div>
 
         {(status === 'ONGOING' || status === 'ENDED') && <StatsBar stats={stats} />}

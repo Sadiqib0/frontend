@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   createElection, startElection, endElection,
-  nominateCandidate, getAuditLog,
+  nominateCandidate, getAuditLog, getVoters, removeCandidate,
 } from '../api/admin';
 import {
   getElectionStatus, getElectionStats, getElectionPositions,
@@ -47,6 +47,13 @@ function IconClipboard() {
   return (
     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
       <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+    </svg>
+  );
+}
+function IconPerson() {
+  return (
+    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
     </svg>
   );
 }
@@ -318,6 +325,7 @@ function CandidatesTab({ token, positions, status }) {
   const [success, setSuccess] = useState('');
   const [candidates, setCandidates] = useState([]);
   const [selectedPos, setSelectedPos] = useState('');
+  const [removingId, setRemovingId] = useState('');
 
   const loadCandidates = useCallback(async (pos) => {
     if (!pos) return;
@@ -358,6 +366,21 @@ function CandidatesTab({ token, positions, status }) {
       setError(err.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleRemoveCandidate = async (candidateId) => {
+    setError('');
+    setSuccess('');
+    setRemovingId(candidateId);
+    try {
+      await removeCandidate(candidateId, token);
+      setSuccess('Candidate removed successfully.');
+      loadCandidates(selectedPos);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setRemovingId('');
     }
   };
 
@@ -464,6 +487,7 @@ function CandidatesTab({ token, positions, status }) {
                   <th className="text-left px-5 py-3 text-neutral-500 font-semibold">#</th>
                   <th className="text-left px-5 py-3 text-neutral-500 font-semibold">Name</th>
                   <th className="text-left px-5 py-3 text-neutral-500 font-semibold">Position</th>
+                  <th className="text-right px-5 py-3 text-neutral-500 font-semibold">Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -472,6 +496,19 @@ function CandidatesTab({ token, positions, status }) {
                     <td className="px-5 py-3 text-neutral-500">{i + 1}</td>
                     <td className="px-5 py-3 text-white font-medium">{c.fullName}</td>
                     <td className="px-5 py-3 text-neutral-400">{positionLabel(c.position)}</td>
+                    <td className="px-5 py-3 text-right">
+                      {canNominate ? (
+                        <button
+                          onClick={() => handleRemoveCandidate(c.id)}
+                          disabled={removingId === c.id}
+                          className="text-xs text-red-400 hover:text-red-300 disabled:opacity-60 transition-colors border border-red-500/30 hover:border-red-500/60 rounded-lg px-3 py-1.5"
+                        >
+                          {removingId === c.id ? 'Removing…' : 'Remove'}
+                        </button>
+                      ) : (
+                        <span className="text-xs text-neutral-600">Locked</span>
+                      )}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -704,12 +741,97 @@ function AuditTab({ token }) {
   );
 }
 
+function VotersTab({ token }) {
+  const [voters, setVoters] = useState([]);
+  const [page, setPage] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const SIZE = 20;
+
+  const load = useCallback(async (p) => {
+    setLoading(true);
+    try {
+      const data = await getVoters(p, SIZE, token);
+      setVoters(data);
+      setHasMore(data.length === SIZE);
+    } catch {
+      setVoters([]);
+      setHasMore(false);
+    } finally {
+      setLoading(false);
+    }
+  }, [token]);
+
+  useEffect(() => { load(page); }, [page, load]);
+
+  return (
+    <div className="flex flex-col gap-8">
+      <div>
+        <h2 className="text-xl font-bold text-white mb-1">Voters</h2>
+        <p className="text-neutral-500 text-sm">Registered voters list</p>
+      </div>
+
+      {loading ? (
+        <div className="flex items-center justify-center py-16">
+          <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+        </div>
+      ) : voters.length === 0 ? (
+        <div className="border border-neutral-800 rounded-xl py-12 text-center text-neutral-500 text-sm">
+          No voters found.
+        </div>
+      ) : (
+        <div className="border border-neutral-800 rounded-xl overflow-hidden">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-neutral-800 bg-neutral-900/40">
+                <th className="text-left px-5 py-3 text-neutral-500 font-semibold">#</th>
+                <th className="text-left px-5 py-3 text-neutral-500 font-semibold">Name</th>
+                <th className="text-left px-5 py-3 text-neutral-500 font-semibold">Email</th>
+                <th className="text-left px-5 py-3 text-neutral-500 font-semibold">Matric</th>
+              </tr>
+            </thead>
+            <tbody>
+              {voters.map((v, i) => (
+                <tr key={v.id} className="border-b border-neutral-800/50 last:border-0">
+                  <td className="px-5 py-3 text-neutral-500">{page * SIZE + i + 1}</td>
+                  <td className="px-5 py-3 text-white font-medium">{`${v.firstName ?? ''} ${v.lastName ?? ''}`.trim()}</td>
+                  <td className="px-5 py-3 text-neutral-400">{v.email ?? '—'}</td>
+                  <td className="px-5 py-3 text-neutral-400">{v.matricNumber ?? '—'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      <div className="flex items-center justify-between pt-2">
+        <button
+          onClick={() => setPage(p => Math.max(0, p - 1))}
+          disabled={page === 0 || loading}
+          className="text-sm text-neutral-500 hover:text-neutral-300 disabled:opacity-30 transition-colors px-3 py-1.5 rounded-lg border border-neutral-800"
+        >
+          ← Previous
+        </button>
+        <span className="text-neutral-600 text-xs">Page {page + 1}</span>
+        <button
+          onClick={() => setPage(p => p + 1)}
+          disabled={!hasMore || loading}
+          className="text-sm text-neutral-500 hover:text-neutral-300 disabled:opacity-30 transition-colors px-3 py-1.5 rounded-lg border border-neutral-800"
+        >
+          Next →
+        </button>
+      </div>
+    </div>
+  );
+}
+
 // ── Sidebar ───────────────────────────────────────────────────────────────────
 
 const NAV = [
   { id: 'overview',   label: 'Overview',   Icon: IconGrid },
   { id: 'elections',  label: 'Elections',  Icon: IconBolt },
   { id: 'candidates', label: 'Candidates', Icon: IconUsers },
+  { id: 'voters',     label: 'Voters',     Icon: IconPerson },
   { id: 'results',    label: 'Results',    Icon: IconChart },
   { id: 'audit',      label: 'Audit Log',  Icon: IconClipboard },
 ];
@@ -826,6 +948,9 @@ export default function AdminDashboard() {
             )}
             {tab === 'results' && (
               <ResultsTab positions={positions} status={status} />
+            )}
+            {tab === 'voters' && (
+              <VotersTab token={admin?.token} />
             )}
             {tab === 'audit' && (
               <AuditTab token={admin?.token} />

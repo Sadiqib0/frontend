@@ -1,5 +1,6 @@
 import { api } from './client';
 
+export const getElection = () => api.get('/election');
 export const getElectionStatus = () => api.get('/election/status');
 export const getElectionPositions = () => api.get('/election/positions');
 export const getElectionStats = () => api.get('/election/stats');
