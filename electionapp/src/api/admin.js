@@ -18,8 +18,5 @@ export const endElection = (token) =>
 export const nominateCandidate = (data, token) =>
   api.post('/admin/candidate', data, adminHeaders(token));
 
-export const getVoters = (page = 0, size = 20, token) =>
-  api.get(`/voters?page=${page}&size=${size}`, adminHeaders(token));
-
 export const getAuditLog = (page = 0, size = 20, token) =>
   api.get(`/audit?page=${page}&size=${size}`, adminHeaders(token));

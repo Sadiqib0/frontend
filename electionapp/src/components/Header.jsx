@@ -1,5 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { Logo } from './Logo';
 
 export function Header({ showBack, backLabel = 'Elections', backTo = '/elections' }) {
   const { user, logout } = useAuth();
@@ -16,9 +17,8 @@ export function Header({ showBack, backLabel = 'Elections', backTo = '/elections
   return (
     <header className="flex items-center justify-between px-6 py-4 border-b border-neutral-800">
       <div className="flex items-center gap-3">
-        <Link to="/elections" className="flex items-center gap-2 font-bold text-white text-lg">
-          <span className="text-blue-500 text-xl">◆</span>
-          Election App
+        <Link to="/elections">
+          <Logo size="sm" />
         </Link>
         {showBack && (
           <>
